@@ -1,0 +1,14 @@
+{
+  "name": "snip-snip",
+  "version": "0.1.0",
+  "description": "Runnable Python code snippets in the browser, via MicroPython compiled to WebAssembly",
+  "type": "module",
+  "exports": "./snip.js",
+  "files": [
+    "snip.js",
+    "vendor/micropython.mjs",
+    "vendor/micropython.wasm"
+  ],
+  "keywords": ["python", "micropython", "wasm", "snippets", "playground"],
+  "license": "MIT"
+}

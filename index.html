@@ -6,10 +6,6 @@
 <title>snip</title>
 <style>
   body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; }
-  textarea { width: 100%; box-sizing: border-box; white-space: pre; field-sizing: content; }
-  textarea, pre { font-family: ui-monospace, monospace; font-size: 0.85rem; }
-  pre { white-space: pre-wrap; word-break: break-word; }
-  pre.error, .status.failed { color: #b00; }
 </style>
 </head>
 <body>
@@ -18,8 +14,7 @@
 Interactive code snippets.
 </p>
 
-<form id="snippet" class="snippet">
-  <textarea name="code" rows="9" spellcheck="false">
+<pre>
 def fib(n):
     a, b = 0, 1
     for _ in range(n):
@@ -27,58 +22,22 @@ def fib(n):
     return a
 
 for i in range(8):
-    print(i, fib(i))</textarea>
-  <div class="snippet-bar">
-    <button>Run</button>
-    <span class="status"></span>
-  </div>
-  <pre hidden></pre>
-</form>
+    print(i, fib(i))</pre>
+<snip-pet></snip-pet>
 
 <p>
-And some text.
+And some text. Multiple snippets on one page work; each run is a clean slate.
 </p>
 
-<script type="module">
-  const form = document.getElementById('snippet');
-  const button = form.querySelector('button');
-  const output = form.querySelector('pre');
-  const status = form.querySelector('.status');
+<pre>
+counts = {}
+for word in 'the quick brown fox the lazy dog the end'.split():
+    counts[word] = counts.get(word, 0) + 1
 
-  let loadMicroPython = null;
+for word, n in sorted(counts.items(), key=lambda kv: -kv[1]):
+    print(f'{word:6} {n}')</pre>
+<snip-pet></snip-pet>
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    button.disabled = true;
-    button.textContent = 'Running…';
-    status.textContent = loadMicroPython ? 'running' : 'loading runtime…';
-    status.classList.remove('failed');
-
-    const lines = [];
-    const capture = (text) => lines.push(text);
-    let failed = false;
-    const t0 = performance.now();
-    try {
-      if (!loadMicroPython) {
-        ({ loadMicroPython } = await import('./vendor/micropython.mjs'));
-      }
-      // fresh interpreter per run, so every run is a clean slate
-      const mp = await loadMicroPython({ stdout: capture, stderr: capture });
-      await mp.runPythonAsync(form.code.value);
-    } catch (err) {
-      lines.push(String(err.message ?? err).trim());
-      failed = true;
-    }
-    const ms = Math.max(1, Math.round(performance.now() - t0));
-
-    output.textContent = lines.join('\n') || '(no output)';
-    output.classList.toggle('error', failed);
-    output.hidden = false;
-    status.textContent = (failed ? '✗ failed' : '✓ ok') + ' · ' + ms + ' ms';
-    status.classList.toggle('failed', failed);
-    button.disabled = false;
-    button.textContent = 'Run';
-  });
-</script>
+<script type="module" src="./snip.js"></script>
 </body>
 </html>
