@@ -34,13 +34,22 @@ class SnipSnippet extends HTMLElement {
       document.head.append(style);
     }
 
-    const source = this.previousElementSibling;
-    if (!source || source.tagName !== 'PRE') {
-      console.warn('snip-pet: no <pre> found before element', this);
+    // Find the code block. An explicit selector="..." attribute wins.
+    // Otherwise use the previous sibling — or the parent's previous sibling,
+    // since markdown converters (pandoc et al.) wrap a bare <snip-pet> in <p>.
+    // The block may be the <pre> itself or a wrapper around one, like
+    // pandoc's <div class="sourceCode">.
+    const sel = this.getAttribute('selector');
+    const block = sel
+      ? document.querySelector(sel)
+      : this.previousElementSibling ?? this.parentElement.previousElementSibling;
+    const codeEl = block?.matches('pre, code') ? block : block?.querySelector('pre, code');
+    if (!codeEl) {
+      console.warn('snip-pet: no code block found for', this);
       return;
     }
-    const code = source.textContent.replace(/^\n/, '').trimEnd();
-    source.hidden = true;
+    const code = codeEl.textContent.replace(/^\n/, '').trimEnd();
+    block.hidden = true;
 
     this.innerHTML = `
       <form>
