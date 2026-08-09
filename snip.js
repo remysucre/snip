@@ -95,7 +95,7 @@ class SnipSnippet extends HTMLElement {
       output.textContent = lines.join('\n') || '(no output)';
       output.classList.toggle('error', failed);
       output.hidden = false;
-      status.textContent = (failed ? '✗ failed' : '✓ ok') + ' · ' + ms + ' ms';
+      status.textContent =   ms + ' ms';
       status.classList.toggle('failed', failed);
       button.disabled = false;
       button.textContent = 'Run';
