@@ -1,6 +1,6 @@
 {
   "name": "snipsnipsnip",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Runnable Python code snippets in the browser, via MicroPython compiled to WebAssembly",
   "type": "module",
   "exports": "./snip.js",
