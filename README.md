@@ -1,3 +1,5 @@
+[![npm](https://img.shields.io/npm/v/%40remywang%2Fsnip)](https://www.npmjs.com/package/@remywang/snip)
+
 Runnable code snippets in the browser, no backend: Python via
 [MicroPython](https://micropython.org) (~550 KB) and SQL via the official
 [SQLite](https://sqlite.org/wasm) build (~1.4 MB), each compiled to
