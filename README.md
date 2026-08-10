@@ -44,3 +44,10 @@ widget finds its code in the preceding block.)
 
 The widget replaces the `<pre>` with an editable code box, a Run button, and an
 inline output block.
+
+```python
+print("snip snip snip!")
+```
+<snip-py></snip-py>
+
+<script type="module" src="./snip.js"></script>

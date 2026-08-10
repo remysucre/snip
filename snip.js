@@ -112,7 +112,6 @@ class SnipBase extends HTMLElement {
         <div>
           <button>Run</button>
           <span class="status"></span>
-          <a href="#" class="close" hidden>x</a>
         </div>
         <pre hidden></pre>
       </form>`;
@@ -122,19 +121,23 @@ class SnipBase extends HTMLElement {
     const button = form.querySelector('button');
     const output = form.querySelector('pre');
     const status = form.querySelector('.status');
-    const close = form.querySelector('.close');
-
-    close.addEventListener('click', (e) => {
-      e.preventDefault();
-      output.hidden = true;
-      close.hidden = true;
-    });
 
     textarea.value = code;
     textarea.rows = code.split('\n').length; // fallback where field-sizing is unsupported
 
+    // after a run the button reads Close; editing the code flips it back to Run
+    textarea.addEventListener('input', () => {
+      if (button.textContent === 'Close') button.textContent = 'Run';
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      if (button.textContent === 'Close') {
+        output.hidden = true;
+        status.textContent = '';
+        button.textContent = 'Run';
+        return;
+      }
       button.disabled = true;
       button.textContent = 'Running…';
       status.textContent = engine.module ? 'running' : 'loading runtime…';
@@ -161,9 +164,8 @@ class SnipBase extends HTMLElement {
       output.hidden = false;
       status.textContent = ms + ' ms';
       status.classList.toggle('failed', failed);
-      close.hidden = false;
       button.disabled = false;
-      button.textContent = 'Run';
+      button.textContent = 'Close';
     });
   }
 }
