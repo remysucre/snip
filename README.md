@@ -8,13 +8,13 @@ Write a normal code block, then attach a snippet widget to it:
 ```html
 <pre>
 print("Hello, World!")</pre>
-<snip-py></snip-py>
+<run-snip lang="python"></run-snip>
 
 <pre>
 SELECT 1 + 1;</pre>
-<snip-sql></snip-sql>
+<run-snip lang="sql"></run-snip>
 
-<script type="module" src="https://unpkg.com/snipsnipsnip@0/snip.js"></script>
+<script type="module" src="https://unpkg.com/@remywang/snip@0/snip.js"></script>
 ```
 
 SQL snippets get a fresh in-memory database per run; SELECT results print as
@@ -35,7 +35,7 @@ def greet(name):
 
 <pre>
 print(greet('snip'))</pre>
-<snip-py setup="greet.py"></snip-py>
+<run-snip lang="python" setup="greet.py"></run-snip>
 ```
 
 (Don't put the setup element between a code block and its widget — the
@@ -47,6 +47,6 @@ inline output block.
 ```python
 print("snip snip snip!")
 ```
-<snip-py></snip-py>
+<run-snip lang="python"></run-snip>
 
 <script type="module" src="./snip.js"></script>

@@ -21,7 +21,7 @@ def fib(n):
 
 for i in range(8):
     print(i, fib(i))</pre>
-<snip-py></snip-py>
+<run-snip lang="python"></run-snip>
 
 <p>SQL:</p>
 
@@ -29,7 +29,7 @@ for i in range(8):
 CREATE TABLE fruits(name, qty);
 INSERT INTO fruits VALUES ('apple', 3), ('pear', 5), ('plum', 2);
 SELECT name, qty FROM fruits ORDER BY qty DESC;</pre>
-<snip-sql></snip-sql>
+<run-snip lang="sql"></run-snip>
 
 <p>Setup and teardown (the <code>greet</code> helper is defined in a hidden
 setup block, and a hidden teardown checks the result):</p>
@@ -47,7 +47,7 @@ print("check passed")
 <pre>
 msg = greet('snip')
 print(msg)</pre>
-<snip-py setup="greet.py" teardown="check.py"></snip-py>
+<run-snip lang="python" setup="greet.py" teardown="check.py"></run-snip>
 
 <script type="module" src="./snip.js"></script>
 </body>

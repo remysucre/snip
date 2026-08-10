@@ -1,7 +1,8 @@
 {
-  "name": "snipsnipsnip",
+  "name": "@remywang/snip",
   "version": "0.3.0",
-  "description": "Runnable Python code snippets in the browser, via MicroPython compiled to WebAssembly",
+  "description": "Runnable Python and SQL code snippets in the browser, via MicroPython and SQLite compiled to WebAssembly",
+  "publishConfig": { "access": "public" },
   "type": "module",
   "exports": "./snip.js",
   "files": [

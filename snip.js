@@ -2,22 +2,21 @@
 //
 // Usage:
 //   <pre>print("hi")</pre>
-//   <snip-py></snip-py>
+//   <run-snip lang="python"></run-snip>
 //
 //   <pre>SELECT 1 + 1;</pre>
-//   <snip-sql></snip-sql>
+//   <run-snip lang="sql"></run-snip>
 //
 //   <script type="module" src=".../snip.js"></script>
 
 const STYLE = `
-  snip-py, snip-sql { display: block; }
-  snip-py textarea, snip-sql textarea {
+  run-snip { display: block; }
+  run-snip textarea {
     width: 100%; box-sizing: border-box; white-space: pre; field-sizing: content;
     font-family: ui-monospace, monospace; font-size: 0.85rem;
   }
-  snip-py pre, snip-sql pre { white-space: pre-wrap; word-break: break-word; }
-  snip-py pre.error, snip-sql pre.error,
-  snip-py .status.failed, snip-sql .status.failed { color: #b00; }
+  run-snip pre { white-space: pre-wrap; word-break: break-word; }
+  run-snip pre.error, run-snip .status.failed { color: #b00; }
 `;
 
 const style = document.createElement('style');
@@ -48,7 +47,7 @@ function loadTemplate(id) {
 }
 
 const engines = {
-  py: {
+  python: {
     module: null,
     async run(code, print) {
       this.module ??= import(new URL('./vendor/micropython.mjs', import.meta.url));
@@ -78,11 +77,15 @@ const engines = {
   },
 };
 
-class SnipBase extends HTMLElement {
+class RunSnip extends HTMLElement {
   connectedCallback() {
     if (this.dataset.ready) return;
     this.dataset.ready = 'true';
-    const engine = engines[this.constructor.engine];
+    const engine = engines[this.getAttribute('lang')];
+    if (!engine) {
+      console.warn('run-snip: unknown lang for', this);
+      return;
+    }
 
     // Find the code block. An explicit selector="..." attribute wins.
     // Otherwise use the previous sibling — or the parent's previous sibling,
@@ -165,8 +168,4 @@ class SnipBase extends HTMLElement {
   }
 }
 
-class SnipPy extends SnipBase { static engine = 'py'; }
-class SnipSql extends SnipBase { static engine = 'sql'; }
-
-customElements.define('snip-py', SnipPy);
-customElements.define('snip-sql', SnipSql);
+customElements.define('run-snip', RunSnip);
