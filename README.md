@@ -2,7 +2,7 @@
 
 Runnable Python and SQL code snippets, using WASM builds of
  [MicroPython](https://micropython.org) (~550 KB) and
-[SQLite](https://sqlite.org/wasm) build (~1.4 MB).
+[SQLite](https://sqlite.org/wasm) (~1.4 MB).
 Write a code block, then place a snippet widget after it:
 
 ```html
