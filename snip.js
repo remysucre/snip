@@ -36,20 +36,15 @@ function table(cols, rows) {
     .join('\n');
 }
 
-// Resolve a setup="..." / teardown="..." reference: "#id" points at an element
-// on the page (typically <script type="text/plain">), anything else is fetched
-// as a file. Setup text runs before the snippet's code, teardown after.
-async function loadTemplate(ref) {
-  if (ref.startsWith('#')) {
-    // getElementById, not querySelector: ids like "greet.py" contain
-    // characters that mean something else in a CSS selector
-    const el = document.getElementById(ref.slice(1));
-    if (!el) throw new Error(`template ${ref} not found`);
-    return el.textContent.replace(/^\n/, '');
-  }
-  const resp = await fetch(ref);
-  if (!resp.ok) throw new Error(`could not load template ${ref} (HTTP ${resp.status})`);
-  return resp.text();
+// Resolve a setup="..." / teardown="..." reference: the id of an element on
+// the page, typically <script type="text/plain">. Setup text runs before the
+// snippet's code, teardown after.
+// getElementById, not querySelector: ids like "greet.py" contain characters
+// that mean something else in a CSS selector.
+function loadTemplate(id) {
+  const el = document.getElementById(id);
+  if (!el) throw new Error(`template ${id} not found`);
+  return el.textContent.replace(/^\n/, '');
 }
 
 const engines = {
@@ -150,8 +145,8 @@ class SnipBase extends HTMLElement {
         let code = textarea.value;
         const setup = this.getAttribute('setup');
         const teardown = this.getAttribute('teardown');
-        if (setup) code = (await loadTemplate(setup)).trimEnd() + '\n' + code;
-        if (teardown) code = code.trimEnd() + '\n' + (await loadTemplate(teardown));
+        if (setup) code = loadTemplate(setup).trimEnd() + '\n' + code;
+        if (teardown) code = code.trimEnd() + '\n' + loadTemplate(teardown);
         await engine.run(code, (text) => lines.push(text));
       } catch (err) {
         lines.push(String(err.message ?? err).trim());

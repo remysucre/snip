@@ -22,11 +22,10 @@ an aligned text table.
 
 ## Setup and teardown
 
-To hide boilerplate, give the widget a `setup` and/or `teardown` attribute:
-setup code is prepended to the snippet before running, and teardown code
-appended (handy for hidden checks). `"#id"` reads a
-`<script type="text/plain">` element on the page; any other value is fetched
-as a file relative to the page.
+To hide boilerplate, give the widget a `setup` and/or `teardown` attribute
+naming the id of a `<script type="text/plain">` element on the page: setup
+code is prepended to the snippet before running, and teardown code appended
+(handy for hidden checks).
 
 ```html
 <script id="greet.py" type="text/plain">
@@ -36,7 +35,7 @@ def greet(name):
 
 <pre>
 print(greet('snip'))</pre>
-<snip-py setup="#greet.py"></snip-py>
+<snip-py setup="greet.py"></snip-py>
 ```
 
 (Don't put the setup element between a code block and its widget — the
