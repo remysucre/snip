@@ -1,6 +1,6 @@
 [![npm](https://img.shields.io/npm/v/%40remywang%2Fsnip)](https://www.npmjs.com/package/@remywang/snip)
 
-Runnable Python and SQL code snippets, using the WASM builds of
+Runnable Python and SQL code snippets, using WASM builds of
  [MicroPython](https://micropython.org) (~550 KB) and
 [SQLite](https://sqlite.org/wasm) build (~1.4 MB).
 Write a code block, then place a snippet widget after it:
