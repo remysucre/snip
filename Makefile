@@ -1,5 +1,5 @@
 index.html: README.md snip.lua
-	pandoc -s --lua-filter snip.lua -M title=snip \
+	pandoc -s --lua-filter snip.lua -M title=snip -V mainfont=sans-serif \
 	  -V header-includes='<script type="module" src="./snip.js"></script>' \
 	  README.md -o index.html
 
