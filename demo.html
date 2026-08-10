@@ -31,19 +31,23 @@ INSERT INTO fruits VALUES ('apple', 3), ('pear', 5), ('plum', 2);
 SELECT name, qty FROM fruits ORDER BY qty DESC;</pre>
 <snip-sql></snip-sql>
 
-<p>Template (the <code>greet</code> helper is defined in a hidden template;
-the snippet shows only the interesting part):</p>
+<p>Setup and teardown (the <code>greet</code> helper is defined in a hidden
+setup block, and a hidden teardown checks the result):</p>
 
 <script id="greet.py" type="text/plain">
 def greet(name):
     return f"Hello, {name}!"
+</script>
 
-##CODE##
+<script id="check.py" type="text/plain">
+assert msg == "Hello, snip!", "unexpected greeting"
+print("check passed")
 </script>
 
 <pre>
-print(greet('snip'))</pre>
-<snip-py template="#greet.py"></snip-py>
+msg = greet('snip')
+print(msg)</pre>
+<snip-py setup="#greet.py" teardown="#check.py"></snip-py>
 
 <script type="module" src="./snip.js"></script>
 </body>

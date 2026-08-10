@@ -36,9 +36,9 @@ function table(cols, rows) {
     .join('\n');
 }
 
-// Resolve a template="..." reference: "#id" points at an element on the page
-// (typically <script type="text/plain">), anything else is fetched as a file.
-// The template's ##CODE## placeholder is replaced with the snippet's code.
+// Resolve a setup="..." / teardown="..." reference: "#id" points at an element
+// on the page (typically <script type="text/plain">), anything else is fetched
+// as a file. Setup text runs before the snippet's code, teardown after.
 async function loadTemplate(ref) {
   if (ref.startsWith('#')) {
     // getElementById, not querySelector: ids like "greet.py" contain
@@ -145,11 +145,10 @@ class SnipBase extends HTMLElement {
       const t0 = performance.now();
       try {
         let code = textarea.value;
-        const tpl = this.getAttribute('template');
-        if (tpl) {
-          // replacement is a function so "$" sequences in code stay literal
-          code = (await loadTemplate(tpl)).replace('##CODE##', () => code);
-        }
+        const setup = this.getAttribute('setup');
+        const teardown = this.getAttribute('teardown');
+        if (setup) code = (await loadTemplate(setup)).trimEnd() + '\n' + code;
+        if (teardown) code = code.trimEnd() + '\n' + (await loadTemplate(teardown));
         await engine.run(code, (text) => lines.push(text));
       } catch (err) {
         lines.push(String(err.message ?? err).trim());

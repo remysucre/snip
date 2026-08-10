@@ -20,27 +20,26 @@ SELECT 1 + 1;</pre>
 SQL snippets get a fresh in-memory database per run; SELECT results print as
 an aligned text table.
 
-## Templates
+## Setup and teardown
 
-To hide boilerplate, give the widget a `template` attribute. The template's
-`##CODE##` placeholder is replaced with the snippet's code before running.
-`template="#id"` reads a `<script type="text/plain">` element on the page;
-any other value is fetched as a file relative to the page.
+To hide boilerplate, give the widget a `setup` and/or `teardown` attribute:
+setup code is prepended to the snippet before running, and teardown code
+appended (handy for hidden checks). `"#id"` reads a
+`<script type="text/plain">` element on the page; any other value is fetched
+as a file relative to the page.
 
 ```html
 <script id="greet.py" type="text/plain">
 def greet(name):
     return f"Hello, {name}!"
-
-##CODE##
 </script>
 
 <pre>
 print(greet('snip'))</pre>
-<snip-py template="#greet.py"></snip-py>
+<snip-py setup="#greet.py"></snip-py>
 ```
 
-(Don't put the template element between a code block and its widget — the
+(Don't put the setup element between a code block and its widget — the
 widget finds its code in the preceding block.)
 
 The widget replaces the `<pre>` with an editable code box, a Run button, and an
