@@ -7,7 +7,9 @@
   "files": [
     "snip.js",
     "vendor/micropython.mjs",
-    "vendor/micropython.wasm"
+    "vendor/micropython.wasm",
+    "vendor/sqlite3.mjs",
+    "vendor/sqlite3.wasm"
   ],
   "keywords": [
     "python",
