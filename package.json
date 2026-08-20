@@ -1,8 +1,10 @@
 {
   "name": "@remywang/snip",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Runnable Python and SQL code snippets in the browser, via MicroPython and SQLite compiled to WebAssembly",
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "exports": "./snip.js",
   "files": [
