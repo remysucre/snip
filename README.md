@@ -32,3 +32,36 @@ INSERT INTO fruits VALUES ('apple', 3), ('pear', 5), ('plum', 2);
 SELECT name, qty FROM fruits ORDER BY qty DESC;</pre>
 <run-snip lang="sql" setup="fruits.sql"></run-snip>
 ```
+
+Snippets that share a `session` tag form a notebook. Running one concatenates
+every snippet up to it (in document order) and runs the whole thing from
+scratch — so cells build on each other, without the stale-state surprises of a
+persistent interpreter:
+
+```html
+<pre>
+x = 21</pre>
+<run-snip lang="python" session="1"></run-snip>
+
+<pre>
+print(x * 2)</pre>
+<run-snip lang="python" session="1"></run-snip>
+```
+
+`setup` and `session` compose: put `setup` on a session's first cell and its
+template becomes the session's shared setup, invisibly prepended whichever
+cell in the session actually runs:
+
+```html
+<script id="math-setup.py" type="text/plain">
+import math
+</script>
+
+<pre>
+r = 2</pre>
+<run-snip lang="python" session="2" setup="math-setup.py"></run-snip>
+
+<pre>
+math.pi * r ** 2</pre>
+<run-snip lang="python" session="2"></run-snip>
+```

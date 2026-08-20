@@ -287,5 +287,51 @@ INSERT INTO fruits VALUES ('apple', 3), ('pear', 5), ('plum', 2);
 <pre>
 SELECT name, qty FROM fruits ORDER BY qty DESC;</pre>
 <run-snip lang="sql" setup="fruits.sql"></run-snip>
+<p>Snippets that share a <code>session</code> tag form a notebook.
+Running one concatenates every snippet up to it (in document order) and
+runs the whole thing from scratch — so cells build on each other,
+without the stale-state surprises of a persistent interpreter:</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode html"><code class="sourceCode html"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">pre</span><span class="dt">&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>x = 21<span class="dt">&lt;/</span><span class="kw">pre</span><span class="dt">&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">run-snip</span><span class="ot"> lang</span><span class="op">=</span><span class="st">&quot;python&quot;</span><span class="ot"> session</span><span class="op">=</span><span class="st">&quot;1&quot;</span><span class="dt">&gt;&lt;/</span><span class="kw">run-snip</span><span class="dt">&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">pre</span><span class="dt">&gt;</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>print(x * 2)<span class="dt">&lt;/</span><span class="kw">pre</span><span class="dt">&gt;</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">run-snip</span><span class="ot"> lang</span><span class="op">=</span><span class="st">&quot;python&quot;</span><span class="ot"> session</span><span class="op">=</span><span class="st">&quot;1&quot;</span><span class="dt">&gt;&lt;/</span><span class="kw">run-snip</span><span class="dt">&gt;</span></span></code></pre></div>
+<pre>
+x = 21</pre>
+<run-snip lang="python" session="1"></run-snip>
+
+<pre>
+print(x * 2)</pre>
+<run-snip lang="python" session="1"></run-snip>
+<p><code>setup</code> and <code>session</code> compose: put
+<code>setup</code> on a session’s first cell and its template becomes
+the session’s shared setup, invisibly prepended whichever cell in the
+session actually runs:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode html"><code class="sourceCode html"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">script</span><span class="ot"> id</span><span class="op">=</span><span class="st">&quot;math-setup.py&quot;</span><span class="ot"> type=</span><span class="st">&quot;text/plain&quot;</span><span class="dt">&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> math</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">script</span><span class="dt">&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">pre</span><span class="dt">&gt;</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>r = 2<span class="dt">&lt;/</span><span class="kw">pre</span><span class="dt">&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">run-snip</span><span class="ot"> lang</span><span class="op">=</span><span class="st">&quot;python&quot;</span><span class="ot"> session</span><span class="op">=</span><span class="st">&quot;2&quot;</span><span class="ot"> setup</span><span class="op">=</span><span class="st">&quot;math-setup.py&quot;</span><span class="dt">&gt;&lt;/</span><span class="kw">run-snip</span><span class="dt">&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">pre</span><span class="dt">&gt;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>math.pi * r ** 2<span class="dt">&lt;/</span><span class="kw">pre</span><span class="dt">&gt;</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">run-snip</span><span class="ot"> lang</span><span class="op">=</span><span class="st">&quot;python&quot;</span><span class="ot"> session</span><span class="op">=</span><span class="st">&quot;2&quot;</span><span class="dt">&gt;&lt;/</span><span class="kw">run-snip</span><span class="dt">&gt;</span></span></code></pre></div>
+<script id="math-setup.py" type="text/plain">
+import math
+</script>
+
+<pre>
+r = 2</pre>
+<run-snip lang="python" session="2" setup="math-setup.py"></run-snip>
+
+<pre>
+math.pi * r ** 2</pre>
+<run-snip lang="python" session="2"></run-snip>
 </body>
 </html>

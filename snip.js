@@ -7,6 +7,10 @@
 //   <pre>SELECT 1 + 1;</pre>
 //   <run-snip lang="sql"></run-snip>
 //
+// Snippets sharing a session="..." tag form a notebook: running one
+// concatenates every snippet up to it (in document order) and runs from
+// scratch — cells build on each other, with no stale interpreter state.
+//
 //   <script type="module" src=".../snip.js"></script>
 
 const STYLE = `
@@ -145,12 +149,7 @@ class RunSnip extends HTMLElement {
       let failed = false;
       const t0 = performance.now();
       try {
-        let code = textarea.value;
-        const setup = this.getAttribute('setup');
-        const teardown = this.getAttribute('teardown');
-        if (setup) code = loadTemplate(setup).trimEnd() + '\n' + code;
-        if (teardown) code = code.trimEnd() + '\n' + loadTemplate(teardown);
-        await engine.run(code, (text) => lines.push(text));
+        await engine.run(this.sessionCode(), (text) => lines.push(text));
       } catch (err) {
         lines.push(String(err.message ?? err).trim());
         failed = true;
@@ -165,6 +164,35 @@ class RunSnip extends HTMLElement {
       button.disabled = false;
       button.textContent = 'Close';
     });
+  }
+
+  // This snippet's code, with its own setup prepended and teardown appended.
+  // Empty for a widget that never upgraded (no code block was found).
+  cellCode() {
+    const textarea = this.querySelector('textarea');
+    if (!textarea) return '';
+    let code = textarea.value;
+    const setup = this.getAttribute('setup');
+    const teardown = this.getAttribute('teardown');
+    if (setup) code = loadTemplate(setup).trimEnd() + '\n' + code;
+    if (teardown) code = code.trimEnd() + '\n' + loadTemplate(teardown);
+    return code;
+  }
+
+  // The program to execute. With a session="..." tag, snippets sharing that
+  // tag form a notebook: running this one concatenates every snippet up to and
+  // including it, in document order, so cells build on each other. It still
+  // runs from scratch — no persistent interpreter, so no stale-state surprises.
+  sessionCode() {
+    const session = this.getAttribute('session');
+    if (session === null) return this.cellCode();
+    const cells = [...document.querySelectorAll('run-snip')]
+      .filter((s) => s.getAttribute('session') === session);
+    return cells
+      .slice(0, cells.indexOf(this) + 1)
+      .map((s) => s.cellCode())
+      .filter(Boolean)
+      .join('\n');
   }
 }
 
