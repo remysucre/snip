@@ -7,9 +7,10 @@
 //   <pre>SELECT 1 + 1;</pre>
 //   <run-snip lang="sql"></run-snip>
 //
-// Snippets sharing a session="..." tag form a notebook: running one
-// concatenates every snippet up to it (in document order) and runs from
-// scratch — cells build on each other, with no stale interpreter state.
+// Snippets sharing a session="..." tag form a notebook: running one replays
+// every snippet up to it (in document order) from scratch — cells build on
+// each other, with no stale interpreter state — but only the output of the
+// one you ran is shown, not the replayed cells before it.
 //
 //   <script type="module" src=".../snip.js"></script>
 
@@ -53,27 +54,37 @@ function loadTemplate(id) {
 const engines = {
   python: {
     module: null,
-    async run(code, print) {
+    // Runs each chunk in order against one interpreter, so state accumulates
+    // across a session — but only the last chunk's output reaches `print`,
+    // so replaying earlier cells doesn't reprint their output too.
+    async run(chunks, print) {
       this.module ??= import(new URL('./vendor/micropython.mjs', import.meta.url));
       const { loadMicroPython } = await this.module;
+      let show = false;
+      const sink = (text) => show && print(text);
       // fresh interpreter per run, so every run is a clean slate
-      const mp = await loadMicroPython({ stdout: print, stderr: print });
-      await mp.runPythonAsync(code);
+      const mp = await loadMicroPython({ stdout: sink, stderr: sink });
+      for (const [i, code] of chunks.entries()) {
+        show = i === chunks.length - 1;
+        await mp.runPythonAsync(code);
+      }
     },
   },
   sql: {
     module: null,
-    async run(code, print) {
+    async run(chunks, print) {
       this.module ??= import(new URL('./vendor/sqlite3.mjs', import.meta.url))
         .then((m) => m.default({ print: () => {}, printErr: () => {} }));
       const sqlite3 = await this.module;
       // fresh in-memory database per run
       const db = new sqlite3.oo1.DB();
       try {
-        const cols = [];
-        const rows = [];
-        db.exec({ sql: code, rowMode: 'array', columnNames: cols, callback: (r) => rows.push([...r]) });
-        if (cols.length) print(table(cols, rows));
+        for (const [i, code] of chunks.entries()) {
+          const cols = [];
+          const rows = [];
+          db.exec({ sql: code, rowMode: 'array', columnNames: cols, callback: (r) => rows.push([...r]) });
+          if (i === chunks.length - 1 && cols.length) print(table(cols, rows));
+        }
       } finally {
         db.close();
       }
@@ -149,7 +160,7 @@ class RunSnip extends HTMLElement {
       let failed = false;
       const t0 = performance.now();
       try {
-        await engine.run(this.sessionCode(), (text) => lines.push(text));
+        await engine.run(this.sessionChunks(), (text) => lines.push(text));
       } catch (err) {
         lines.push(String(err.message ?? err).trim());
         failed = true;
@@ -179,20 +190,21 @@ class RunSnip extends HTMLElement {
     return code;
   }
 
-  // The program to execute. With a session="..." tag, snippets sharing that
-  // tag form a notebook: running this one concatenates every snippet up to and
-  // including it, in document order, so cells build on each other. It still
-  // runs from scratch — no persistent interpreter, so no stale-state surprises.
-  sessionCode() {
+  // The chunks to execute, in order. With a session="..." tag, snippets
+  // sharing that tag form a notebook: running this one replays every
+  // snippet up to and including it, in document order, so cells build on
+  // each other. It still runs from scratch each time — no persistent
+  // interpreter, so no stale-state surprises — and only the last chunk's
+  // output is shown, so replayed cells don't reprint their output.
+  sessionChunks() {
     const session = this.getAttribute('session');
-    if (session === null) return this.cellCode();
+    if (session === null) return [this.cellCode()];
     const cells = [...document.querySelectorAll('run-snip')]
       .filter((s) => s.getAttribute('session') === session);
     return cells
       .slice(0, cells.indexOf(this) + 1)
       .map((s) => s.cellCode())
-      .filter(Boolean)
-      .join('\n');
+      .filter(Boolean);
   }
 }
 
