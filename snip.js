@@ -10,7 +10,9 @@
 // Snippets sharing a session="..." tag form a notebook: running one replays
 // every snippet up to it (in document order) from scratch — cells build on
 // each other, with no stale interpreter state — but only the output of the
-// one you ran is shown, not the replayed cells before it.
+// one you ran is shown, not the replayed cells before it. A hide-run cell
+// stays editable but drops its own run button, for session cells that are
+// only ever run as part of a later one.
 //
 //   <script type="module" src=".../snip.js"></script>
 
@@ -119,24 +121,33 @@ class RunSnip extends HTMLElement {
     const code = codeEl.textContent.replace(/^\n/, '').trimEnd();
     block.remove();
 
+    // A hide-run cell is still a live, editable part of a session — just
+    // without its own run button, since it's meant to be replayed by a
+    // later cell rather than run on its own.
+    const hideRun = this.hasAttribute('hide-run');
+
     this.innerHTML = `
       <form>
         <textarea name="code" spellcheck="false"></textarea>
+        ${hideRun ? '' : `
         <div>
           <button>Run</button>
           <span class="status"></span>
         </div>
-        <pre hidden></pre>
+        <pre hidden></pre>`}
       </form>`;
 
     const form = this.querySelector('form');
     const textarea = form.code;
-    const button = form.querySelector('button');
-    const output = form.querySelector('pre');
-    const status = form.querySelector('.status');
 
     textarea.value = code;
     textarea.rows = code.split('\n').length; // fallback where field-sizing is unsupported
+
+    if (hideRun) return;
+
+    const button = form.querySelector('button');
+    const output = form.querySelector('pre');
+    const status = form.querySelector('.status');
 
     // after a run the button reads Close; editing the code flips it back to Run
     textarea.addEventListener('input', () => {

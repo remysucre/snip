@@ -65,3 +65,17 @@ r = 2</pre>
 math.pi * r ** 2</pre>
 <run-snip lang="python" session="2"></run-snip>
 ```
+
+A `hide-run` cell stays visible and editable, but drops its own run
+button — for a session cell that's only ever meant to run as part of a
+later one:
+
+```html
+<pre>
+nums = [3, 1, 4, 1, 5]</pre>
+<run-snip lang="python" session="3" hide-run></run-snip>
+
+<pre>
+print(sorted(nums))</pre>
+<run-snip lang="python" session="3"></run-snip>
+```
